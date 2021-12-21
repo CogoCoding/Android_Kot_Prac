@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onStopTrackingTouch(p0: SeekBar?) {
-                    seekBar?:return
+                    p0?:return
                     startCountDown()
                 }
             }

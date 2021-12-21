@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1040106696498",
+    "project_id": "android-kot-prac",
+    "storage_bucket": "android-kot-prac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040106696498:android:1e332152e0e99a7607712b",
+        "android_client_info": {
+          "package_name": "com.example.kot6"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1040106696498-6vnh8b01igtmfn2qaq17k5csipmrvhlf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5cnslXy-6JFnVcaT7cD_0B0dR0CaYw74"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1040106696498-6vnh8b01igtmfn2qaq17k5csipmrvhlf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
