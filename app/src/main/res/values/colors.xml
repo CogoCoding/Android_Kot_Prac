@@ -10,4 +10,5 @@
     <color name="pomodoro_red">#FFD32F2F</color>
     <color name="transparent">#00000000</color>
     <color name="darkgrey">#00000000</color>
+    <color name="background_black">#222222</color>
 </resources>
