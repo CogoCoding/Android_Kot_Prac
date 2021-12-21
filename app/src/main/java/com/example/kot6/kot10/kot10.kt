@@ -1,5 +1,6 @@
 package com.example.kot6.kot10
 
+import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.TimePickerDialog
 import android.content.Context
@@ -72,6 +73,7 @@ class kot10:AppCompatActivity(){
         } else if ((pendingIntent != null) and alarmModel.onOff.not()) {
             //알람 켜져있는데, 데이터는 꺼져있는경우
             //알람 취소
+            cancelAlarm()
         }
         return alarmModel
     }
@@ -80,14 +82,44 @@ class kot10:AppCompatActivity(){
     private fun initOnOffButton() {
         val onoffBtn = findViewById<Button>(R.id.onoffBtn)
         onoffBtn.setOnClickListener {
+            val model = it.tag as? AlarmDisplayModel ?: return@setOnClickListener
+            val newModel = saveAlarmModel(model.hour,model.min,model.onOff.not())
+            renderView(newModel)
+            if(newModel.onOff){
+                //온 -> 알람 등록
+                val calendar = Calendar.getInstance().apply{
+                    set(Calendar.HOUR_OF_DAY,newModel.hour)
+                    set(Calendar.MINUTE,newModel.min)
+                    if(before(Calendar.getInstance())){//현재시간가져와서 비교
+                        add(Calendar.DATE,1)
+                    }
+                }
+                val alarmManager = getSystemService(Context.ALARM_SERVICE)as AlarmManager
+                val intent = Intent(this,AlarmReceiver::class.java)
+                val pendingIntent = PendingIntent.getBroadcast(this, ALARM_REQUEST_CODE,intent,PendingIntent.FLAG_UPDATE_CURRENT)
+                alarmManager.setInexactRepeating(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    AlarmManager.INTERVAL_DAY,
+                    pendingIntent
+                )
+            }else{
+                //오프 -> 알람 제거
+            }
             //데이터 확인
             //온오프 따라 작업 처리
-            //오프 -> 알람 제거
-            //온 -> 알람 등록
             //데이터 저장
         }
     }
 
+    private fun cancelAlarm(){
+        val pendingIntent = PendingIntent.getBroadcast(this,
+            ALARM_REQUEST_CODE,
+            Intent(this, AlarmReceiver::class.java),
+            PendingIntent.FLAG_NO_CREATE)
+        //기존에 있던 알람 삭제
+        pendingIntent?.cancel()
+    }
     private fun initChangeAlarmTimeButton(){
         val changeAlarmButton = findViewById<Button>(R.id.changeAlarmTimeBtn)
 
@@ -99,13 +131,8 @@ class kot10:AppCompatActivity(){
                 //데이터 저장
                 val model = saveAlarmModel(hour,min,false)
                 renderView(model)
-                //뷰 업데이트
-                val pendingIntent = PendingIntent.getBroadcast(this,
-                    ALARM_REQUEST_CODE,
-                    Intent(this, AlarmReceiver::class.java),
-                    PendingIntent.FLAG_NO_CREATE)
                //기존에 있던 알람 삭제
-                pendingIntent?.cancel()
+                cancelAlarm()
             },calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false)
                 .show()
         }
