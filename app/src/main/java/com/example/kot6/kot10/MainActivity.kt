@@ -14,7 +14,16 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.kot6.R
 import java.util.*
 
-class kot10:AppCompatActivity(){
+class MainActivity:AppCompatActivity(){
+
+    //java의 static과 같음
+    companion object{
+        private const val SHARED_PREFERENCES_NAME = "time"
+        private const val ALARM_KEY = "alarm"
+        private const val ONOFF_KEY = "onoff"
+        private const val ALARM_REQUEST_CODE = 1000
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_kot10)
@@ -24,9 +33,10 @@ class kot10:AppCompatActivity(){
 
         //STEP1 데이터 가져오기
         val model = fetchDataFromSharedPreferences()
-        renderView(model)
 
         //STEP2 뷰에 데이터 그려주기
+        renderView(model)
+
     }
 
     private fun renderView(model: AlarmDisplayModel) {
@@ -41,14 +51,6 @@ class kot10:AppCompatActivity(){
             tag = model
         }
 
-    }
-
-    //java의 static과 같음
-    companion object{
-        private const val SHARED_PREFERENCES_NAME = "time"
-        private const val ALARM_KEY = "alarm"
-        private const val ONOFF_KEY = "onoff"
-        private const val ALARM_REQUEST_CODE = 1000
     }
 
     private fun fetchDataFromSharedPreferences(): AlarmDisplayModel {
@@ -67,12 +69,12 @@ class kot10:AppCompatActivity(){
             ALARM_REQUEST_CODE,
             Intent(this, AlarmReceiver::class.java),
             PendingIntent.FLAG_NO_CREATE)
+
+        //알람은 꺼져있는데, 데이터는 켜져있는 경우
         if ((pendingIntent == null) and alarmModel.onOff) {
-            //알람은 꺼져있는데, 데이터는 켜져있는 경우
             alarmModel.onOff = false
+        //알람 켜져있는데, 데이터는 꺼져있는경우 알람 취소
         } else if ((pendingIntent != null) and alarmModel.onOff.not()) {
-            //알람 켜져있는데, 데이터는 꺼져있는경우
-            //알람 취소
             cancelAlarm()
         }
         return alarmModel
@@ -104,7 +106,7 @@ class kot10:AppCompatActivity(){
                     pendingIntent
                 )
             }else{
-                //오프 -> 알람 제거
+                cancelAlarm()
             }
             //데이터 확인
             //온오프 따라 작업 처리
@@ -117,12 +119,11 @@ class kot10:AppCompatActivity(){
             ALARM_REQUEST_CODE,
             Intent(this, AlarmReceiver::class.java),
             PendingIntent.FLAG_NO_CREATE)
-        //기존에 있던 알람 삭제
         pendingIntent?.cancel()
     }
+
     private fun initChangeAlarmTimeButton(){
         val changeAlarmButton = findViewById<Button>(R.id.changeAlarmTimeBtn)
-
         changeAlarmButton.setOnClickListener {
             //현재시간 그냥 가져오기
             //TimePickDialog로 시간 설정하고, 그 시간을 가져와서
@@ -146,7 +147,7 @@ class kot10:AppCompatActivity(){
         val model = AlarmDisplayModel(
             hour = hour,
             min = min,
-            onOff = false
+            onOff = onOff
         )
 
         val SharedPreferences = getSharedPreferences("time", Context.MODE_PRIVATE)

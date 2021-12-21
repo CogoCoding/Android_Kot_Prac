@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Kot6">
 
         <activity
-            android:name=".kot9.MainActivity"
+            android:name=".kot10.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
