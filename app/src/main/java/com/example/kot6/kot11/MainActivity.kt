@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     companion object{
         const val tag:String ="MainActivity"
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_kot11)
@@ -40,17 +41,14 @@ class MainActivity : AppCompatActivity() {
                     }
                     response.body()?.let{
                         Log.d(tag,it.toString())
-
                         it.books.forEach{book->
                             Log.d(tag,book.toString())
                         }
                     }
                 }
-
                 override fun onFailure(call: Call<BestSellerDto>, t: Throwable) {
                     // TODO 실패처리
                 }
-
             })
     }
 }

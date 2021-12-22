@@ -10,12 +10,11 @@ interface BookService {
     @GET("/api/search.api?output=json")
     fun getBooksByName(
         @Query("key")apiKey:String,
-        @Query("query")keyword:String,
+        @Query("query")keyword:String  // 검색어
     ): Call<SearchBookDto>
 
     @GET("/api/bestSeller.api?output=json&categoryId=100")
     fun getBestSellerBooks(
         @Query("key")apiKey:String
     ): Call<BestSellerDto>
-
 }
