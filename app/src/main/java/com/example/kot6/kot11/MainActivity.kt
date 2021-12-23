@@ -1,5 +1,6 @@
 package com.example.kot6.kot11
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -10,8 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.example.kot6.R
 import com.example.kot6.databinding.ActivityMainKot11Binding
+import com.example.kot6.kot11.adapter.BookAdapter
+import com.example.kot6.kot11.adapter.HistoryAdapter
 import com.example.kot6.kot11.api.BookService
-import com.example.kot6.kot11.model.AppDatabase
 import com.example.kot6.kot11.model.BestSellerDto
 import com.example.kot6.kot11.model.History
 import com.example.kot6.kot11.model.SearchBookDto
@@ -145,22 +147,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initBookRecyclerView(){
-        adapter = BookAdapter()
+        adapter = BookAdapter(itemClickListener = {
+            val intent = Intent(this,DetailActivity::class.java)
+            intent.putExtra("bookModel",it) //직렬화된 클래스라 통째로 넘김
+            startActivity(intent)
+        })
         binding.bookRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.bookRecyclerView.adapter=adapter
     }
     private fun initHistoryRecyclerView(){
         historyAdapter = HistoryAdapter(historyDeleteClickedListener = {
             deleteSearchKeyword(it)
-            binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
-            binding.historyRecyclerView.adapter=historyAdapter
         })
-        adapter = BookAdapter()
-        binding.bookRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.bookRecyclerView.adapter=adapter
+        binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.historyRecyclerView.adapter=historyAdapter
+        initSearchEditText()
     }
 
     private fun initSearchEditText() {
+        // key리스너
         binding.searchEditTx.setOnKeyListener { view, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == MotionEvent.ACTION_DOWN) {
                 Log.d("edittext", binding.searchEditTx.text.toString())
@@ -169,6 +174,7 @@ class MainActivity : AppCompatActivity() {
             }
             return@setOnKeyListener false
         }
+        // touch리스터
         binding.searchEditTx.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 showHistoryView()

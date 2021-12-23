@@ -21,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".kot11.DetailActivity"
 
 <!--    <service android:name=".kot8.myFirebaseMessagingService"-->
 <!--        android:exported="false">-->

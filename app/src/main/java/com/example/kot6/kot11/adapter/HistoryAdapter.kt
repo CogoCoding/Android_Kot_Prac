@@ -1,17 +1,15 @@
-package com.example.kot6.kot11
+package com.example.kot6.kot11.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.example.kot6.databinding.ItemBookBinding
 import com.example.kot6.databinding.ItemHistoryBinding
-import com.example.kot6.kot11.model.Book
 import com.example.kot6.kot11.model.History
 
-class HistoryAdapter(val historyDeleteClickedListener:(String)->Unit) : ListAdapter<History, HistoryAdapter.HistoryItemViewHolder>(diffUtil) { //diffutil로 중복제거
+class HistoryAdapter(val historyDeleteClickedListener:(String)->Unit) : ListAdapter<History, HistoryAdapter.HistoryItemViewHolder>(
+    diffUtil) { //diffutil로 중복제거
 
     inner class HistoryItemViewHolder(private val binding: ItemHistoryBinding): RecyclerView.ViewHolder(binding.root){
 
