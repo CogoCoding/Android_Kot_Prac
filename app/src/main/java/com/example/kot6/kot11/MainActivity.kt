@@ -2,10 +2,14 @@ package com.example.kot6.kot11
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.kot6.R
+import com.example.kot6.databinding.ActivityMainKot11Binding
 import com.example.kot6.kot11.api.BookService
 import com.example.kot6.kot11.model.BestSellerDto
+import com.example.kot6.kot11.model.Book
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,9 +22,14 @@ class MainActivity : AppCompatActivity() {
         const val tag:String ="MainActivity"
     }
 
+    private lateinit var binding : ActivityMainKot11Binding
+    private lateinit var adapter : BookAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_kot11)
+        binding = ActivityMainKot11Binding.inflate(layoutInflater)
+        setContentView(binding.root)
+        initBookRecyclerView()
 
         val retrofit = Retrofit.Builder()
             .baseUrl("http://book.interpark.com")
@@ -34,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                     call: Call<BestSellerDto>,
                     response: Response<BestSellerDto>,
                 ) {
-                   // TODO 성공처리
+                   // STEP1 성공처리
                     if(response.isSuccessful.not()){
                         Log.e(tag,"not! success")
                         return
@@ -44,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                         it.books.forEach{book->
                             Log.d(tag,book.toString())
                         }
+                        adapter.submitList(it.books)
                     }
                 }
                 override fun onFailure(call: Call<BestSellerDto>, t: Throwable) {
@@ -51,4 +61,11 @@ class MainActivity : AppCompatActivity() {
                 }
             })
     }
+
+    fun initBookRecyclerView(){
+        adapter = BookAdapter()
+        binding.bookRecycleView.layoutManager = LinearLayoutManager(this)
+        binding.bookRecycleView.adapter=adapter
+    }
+
 }

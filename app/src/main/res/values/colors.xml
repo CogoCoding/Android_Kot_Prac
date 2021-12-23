@@ -11,4 +11,5 @@
     <color name="transparent">#00000000</color>
     <color name="darkgrey">#00000000</color>
     <color name="background_black">#222222</color>
+    <color name="gray">#aaaaaa</color>
 </resources>
