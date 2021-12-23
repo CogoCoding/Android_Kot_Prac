@@ -5,11 +5,15 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import com.example.kot6.R
 import com.example.kot6.databinding.ActivityMainKot11Binding
 import com.example.kot6.kot11.api.BookService
+import com.example.kot6.kot11.model.AppDatabase
 import com.example.kot6.kot11.model.BestSellerDto
+import com.example.kot6.kot11.model.History
 import com.example.kot6.kot11.model.SearchBookDto
 import retrofit2.Call
 import retrofit2.Callback
@@ -18,20 +22,24 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
-
-    companion object{
-        const val tag:String ="MainActivity"
-    }
-
     private lateinit var binding : ActivityMainKot11Binding
     private lateinit var adapter : BookAdapter
+    private lateinit var historyAdapter : HistoryAdapter
     private lateinit var bookService: BookService
+
+    private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainKot11Binding.inflate(layoutInflater)
         setContentView(binding.root)
         initBookRecyclerView()
+
+        db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "BookSearchDB"
+        ).build()
 
         val retrofit = Retrofit.Builder()
             .baseUrl("http://book.interpark.com")
@@ -47,10 +55,10 @@ class MainActivity : AppCompatActivity() {
                 ) {
                    // STEP1 성공처리
                     if(response.isSuccessful.not()){
-                        Log.e(tag,"not! success")
+                        Log.e("failure","not! success")
                         return
                     }
-                    adapter.submitList(response.body()?.books.orEmpty())
+//                    adapter.submitList(response.body()?.books.orEmpty())
                     response.body()?.let{
                         Log.d(tag,it.toString())
                         it.books.forEach{book->
@@ -61,50 +69,118 @@ class MainActivity : AppCompatActivity() {
                 }
                 override fun onFailure(call: Call<BestSellerDto>, t: Throwable) {
                     // TODO 실패처리
-                    Log.e(tag,t.toString())
+                    Log.e("failure",t.toString())
                 }
             })
         binding.searchEditTx.setOnKeyListener { view, keyCode, event ->
             if(keyCode == KeyEvent.KEYCODE_ENTER && event.action == MotionEvent.ACTION_DOWN){
+                Log.d("edittext",binding.searchEditTx.text.toString())
                 search(binding.searchEditTx.text.toString())
                 return@setOnKeyListener true
-            }else{
-                return@setOnKeyListener false
             }
+            return@setOnKeyListener false
+
         }
     }
 
     private fun search(keyword: String) {
+        bookService.getBooksByNamefull()
+            .enqueue(object : Callback<SearchBookDto>{
+                override fun onResponse(
+                    call: Call<SearchBookDto>,
+                    response: Response<SearchBookDto>
+                ) {
+                    Log.d("error_search",keyword)
+                    // STEP1 성공처리
+                    if(response.isSuccessful.not()){
+                        Log.e("failure","not! success")
+                        return
+                    }
+//                    adapter.submitList(response.body()?.books.orEmpty())
+                    response.body()?.let{
+                        Log.d(tag,it.toString())
+                        it.books.forEach{book->
+                        Log.d(tag,book.toString())
+                       }
+                       adapter.submitList(it.books)
+                    }
+                }
+                override fun onFailure(call: Call<SearchBookDto>, t: Throwable) {
+                    // TODO 실패처리
+                    Log.e("failure",t.toString())
+                }
+            })
+
         bookService.getBooksByName(getString(R.string.interparkAPIKey),keyword)
             .enqueue(object : Callback<SearchBookDto>{
                 override fun onResponse(
                     call: Call<SearchBookDto>,
                     response: Response<SearchBookDto>
                 ) {
+                    Log.d("error_search",keyword)
                     // STEP1 성공처리
                     if(response.isSuccessful.not()){
-                        Log.e(tag,"not! success")
+                        Log.e("failure","not! success")
                         return
                     }
+                    adapter.submitList(response.body()?.books.orEmpty())
                     response.body()?.let{
                         Log.d(tag,it.toString())
                         it.books.forEach{book->
-                            Log.d(tag,book.toString())
-                        }
-                        adapter.submitList(it.books)
+                        Log.d(tag,book.toString())
+                       }
+                       adapter.submitList(it.books)
                     }
                 }
                 override fun onFailure(call: Call<SearchBookDto>, t: Throwable) {
                     // TODO 실패처리
-                    Log.e(tag,t.toString())
+                    Log.e("failure",t.toString())
                 }
             })
     }
 
-    fun initBookRecyclerView(){
+    private fun initBookRecyclerView(){
         adapter = BookAdapter()
-        binding.bookRecycleView.layoutManager = LinearLayoutManager(this)
-        binding.bookRecycleView.adapter=adapter
+        binding.bookRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.bookRecyclerView.adapter=adapter
+    }
+    private fun initHistoryRecyclerView(){
+        historyAdapter = HistoryAdapter(historyDeleteClickedListener = {
+            deleteSearchKeyword(it)
+            binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
+            binding.historyRecyclerView.adapter=historyAdapter
+        })
+        adapter = BookAdapter()
+        binding.bookRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.bookRecyclerView.adapter=adapter
+    }
+
+    private fun showHistoryView(){
+        Thread{
+            val keywords = db.historyDao().getAll().reversed()
+
+        }
+        binding.historyRecyclerView.isVisible=true
+    }
+
+    private fun hideHistoryView(){
+        binding.historyRecyclerView.isVisible=false
+    }
+
+    private fun saveSearchKeyword(keyword:String){
+        Thread{
+            db.historyDao().insertHistory(History(null,keyword))
+        }.start()
+    }
+
+    private fun deleteSearchKeyword(keyword:String){
+        Thread{
+            db.historyDao().delete(keyword)
+            //TODO view 갱신
+        }
+    }
+    companion object{
+        const val tag:String ="MainActivity"
     }
 
 }
