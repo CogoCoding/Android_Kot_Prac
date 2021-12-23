@@ -10,7 +10,7 @@ import com.example.kot6.kot11.model.Review
 @Dao
 interface ReviewDao {
     @Query("SELECT * FROM review WHERE id == :id")
-    fun getOneReview(id:Int):Review
+    fun getOneReview(id:Int):Review?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveReview(review: Review)

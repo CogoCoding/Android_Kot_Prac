@@ -26,17 +26,19 @@ class DetailActivity : AppCompatActivity() {
 
         val model = intent.getParcelableExtra<Book>("bookModel")
         binding.titleTv.text = model?.title.orEmpty()
+        binding.descriptionTv.text =model?.description.orEmpty()
 
         Glide.with(binding.coverImageView.context)
             .load(model?.coverSmallUrl.orEmpty())
             .into(binding.coverImageView)
 
+
         Thread{
             val review = db.reviewDao().getOneReview(model?.id?.toInt()?:0)
             runOnUiThread{
-                binding.reviewEditTv.setText(review.review.orEmpty())
+                binding.reviewEditTv.setText(review?.review.orEmpty())
             }
-        }
+        }.start()
 
         binding.saveBtn.setOnClickListener{
             Thread{
@@ -45,8 +47,7 @@ class DetailActivity : AppCompatActivity() {
                           binding.reviewEditTv.text.toString()
                     )
                 )
-
-            }
+            }.start()
         }
     }
 }

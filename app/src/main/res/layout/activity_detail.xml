@@ -55,7 +55,8 @@
                 app:layout_constraintBottom_toTopOf="@+id/saveBtn"
                 app:layout_constraintTop_toBottomOf="@id/descriptionTv"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                />
 
             <Button
                 android:id="@+id/saveBtn"

@@ -1,8 +1,8 @@
 package com.example.kot6.kot11.model
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.ColumnInfo
 
 @Entity
 data class Review (
