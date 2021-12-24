@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import com.example.kot6.R
 import com.example.kot6.databinding.ActivityLoginBinding
+import com.example.kot6.kot12.DBKey.Companion.USERS
+import com.example.kot6.kot12.DBKey.Companion.USER_ID
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -84,9 +86,9 @@ class LoginActivity:AppCompatActivity(){
             return
         }
         val userId = auth.currentUser?.uid.orEmpty()
-        val currentUserDB = Firebase.database.reference.child("Users").child(userId)
+        val currentUserDB = Firebase.database.reference.child(USERS).child(userId)
         val user = mutableMapOf<String,Any>()
-        user["userId"]=userId
+        user[USER_ID]=userId
         currentUserDB.updateChildren(user)
         finish()
     }
