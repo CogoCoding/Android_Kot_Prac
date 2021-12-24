@@ -166,20 +166,6 @@ class LikeActivity:AppCompatActivity(),CardStackListener { // CardStackListener 
         }
     }
 
-    private fun like() {
-        val card = cardItems[manager.topPosition-1]
-        cardItems.removeFirst()
-
-        userDB.child(card.userId)
-            .child("likeBy")
-            .child("like")
-            .child(getCurrentUserID())
-            .setValue(true)
-
-        saveMatchIfOtherUserLikeMe(card.userId)
-
-        Toast.makeText(this,"${card.name}님을 Like 하셨습니다",Toast.LENGTH_SHORT).show()
-    }
 
     private fun saveMatchIfOtherUserLikeMe(otherUserId:String) {
         val otherUserDB = userDB.child(getCurrentUserID()).child("likeBy").child("like").child(otherUserId)
@@ -205,10 +191,27 @@ class LikeActivity:AppCompatActivity(),CardStackListener { // CardStackListener 
         })
     }
 
+    private fun like() {
+        val card = cardItems[manager.topPosition-1]
+        cardItems.removeFirst()
+
+        userDB.child(card.userId)
+            .child("likeBy")
+            .child("like")
+            .child(getCurrentUserID())
+            .setValue(true)
+
+        saveMatchIfOtherUserLikeMe(card.userId)
+
+        Toast.makeText(this,"${card.name}님을 Like 하셨습니다",Toast.LENGTH_SHORT).show()
+    }
+
     private fun dislike() {
         val card = cardItems[manager.topPosition-1]
+        cardItems.removeFirst()
+
         userDB.child(card.userId)
-            .child("dislikeBy")
+            .child("likeBy")
             .child("dislike")
             .child(getCurrentUserID())
             .setValue(true)
