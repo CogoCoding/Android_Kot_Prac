@@ -8,10 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kot6.R
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
@@ -39,6 +36,7 @@ class LikeActivity:AppCompatActivity(),CardStackListener { // CardStackListener 
                     showNameInputPopup()
                     return
                 }
+                getUnSelectedUsers()
                 //todo 유저정보 갱신
             }
             override fun onCancelled(error: DatabaseError) {
@@ -46,6 +44,47 @@ class LikeActivity:AppCompatActivity(),CardStackListener { // CardStackListener 
             }
         })
         initCardStackView()
+    }
+
+    private fun getUnSelectedUsers() {
+        userDB.addChildEventListener(object:ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                if(snapshot.child("userId").value!=getCurrentUserID()
+                    &&snapshot.child("likedBy").child("like").hasChild(getCurrentUserID()).not()
+                    &&snapshot.child("likedBy").child("dislike").hasChild(getCurrentUserID()).not()){
+
+                    val userId = snapshot.child("userId").value.toString()
+                    var name = "undecided"
+                    if(snapshot.child("name").value!=null){
+                        name=snapshot.child("name").value.toString()
+                    }
+
+                    cardItems.add(CardItem(userId,name))
+                    adapter.submitList(cardItems)
+                    adapter.notifyDataSetChanged()
+                }
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                cardItems.find{it.userId==snapshot.key}?.let {
+                    it.name = snapshot.child("name").value.toString()
+                }
+                adapter.submitList(cardItems)
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     private fun initCardStackView() {
