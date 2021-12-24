@@ -2,4 +2,6 @@
     <string name="app_name">kot6</string>
     <string name="change_time">시간 재설정</string>
     <string name="on_alarm">알람 켜기</string>
+    <string name="facebook_app_id">233891915428507</string>
+    <string name="fb_login_protocol_scheme">fb233891915428507</string>"
 </resources>
