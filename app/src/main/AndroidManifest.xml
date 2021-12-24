@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Kot6">
 
         <activity
-            android:name=".kot11.MainActivity"
+            android:name=".kot12.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".kot11.DetailActivity"></activity>
+        <activity android:name=".kot12.LoginActivity"></activity>
 
 <!--    <service android:name=".kot8.myFirebaseMessagingService"-->
 <!--        android:exported="false">-->
