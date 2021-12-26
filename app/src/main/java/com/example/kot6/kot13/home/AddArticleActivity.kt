@@ -1,19 +1,39 @@
 package com.example.kot6.kot13.home
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.room.Database
 import com.example.kot6.R
+import com.example.kot6.kot13.mypage.DBKey.Companion.DB_ARTICLES
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 
 class AddArticleActivity:AppCompatActivity() {
     private var selectedUri: Uri?=null
+    private val auth: FirebaseAuth by lazy{
+        Firebase.auth
+    }
+    private val storage:FirebaseStorage by lazy{
+        Firebase.storage
+    }
+    private val articleDB: DatabaseReference by lazy{
+        Firebase.database.reference.child(DB_ARTICLES)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +55,26 @@ class AddArticleActivity:AppCompatActivity() {
                 }
             }
         }
+        findViewById<Button>(R.id.submitBtn).setOnClickListener {
+            val title = findViewById<EditText>(R.id.titleEditText).text.toString()
+            val price = findViewById<EditText>(R.id.priceTv).text.toString()
+            val sellerId = auth.currentUser?.uid.orEmpty()
 
+            val model = ArticleModel(sellerId,title,System.currentTimeMillis(),"$price 원","")
+            articleDB.push().setValue(model)
+            finish()
+        }
+    }
+
+    private fun showPermissionContextPopup() {
+        AlertDialog.Builder(this)
+            .setTitle("권한 필요")
+            .setMessage("사진을 가져오기 위해 권한이 필요합니다")
+            .setPositiveButton("동의"){_,_->
+                requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),1010)
+            }
+            .create()
+            .show()
     }
 
     override fun onRequestPermissionsResult(
