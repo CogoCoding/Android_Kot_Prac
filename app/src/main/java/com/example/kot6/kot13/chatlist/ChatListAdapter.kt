@@ -1,5 +1,6 @@
 package com.example.kot6.kot13.chatlist
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -15,6 +16,7 @@ class ChatListAdapter (val onitemClicked:(ChatListItem)->Unit): ListAdapter<Chat
                 onitemClicked(chatListItem)
             }
             binding.chatRoomTitleTv.text=chatListItem.itemTitle
+            Log.e("chatroomtitle","chatListItem.itemTitle")
         }
     }
 

@@ -28,6 +28,8 @@
         <activity android:name=".kot12.LikeActivity"></activity>
         <activity android:name=".kot12.MatchedUserActivity"></activity>
         <activity android:name=".kot13.home.AddArticleActivity"></activity>
+        <activity android:name=".kot13.chatlist.chatRoomActivity"></activity>
+
 
 
         <meta-data
