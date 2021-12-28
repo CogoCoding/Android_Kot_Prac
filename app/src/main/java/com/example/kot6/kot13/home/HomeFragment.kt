@@ -78,7 +78,6 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
             }
         })
 
-
         fragmentHomeBinding.articleRecyclerView.layoutManager = LinearLayoutManager(context)
         fragmentHomeBinding.articleRecyclerView.adapter = articleAdapter
 
