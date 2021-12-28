@@ -7,7 +7,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.kot6.R
 import com.example.kot6.databinding.FragmentHomeBinding
+import com.example.kot6.kot13.chatlist.ChatListItem
+import com.example.kot6.kot13.mypage.DBKey.Companion.CHILD_CHAT
 import com.example.kot6.kot13.mypage.DBKey.Companion.DB_ARTICLES
+import com.example.kot6.kot13.mypage.DBKey.Companion.DB_USERS
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -26,6 +29,7 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
     }
     private val articleList = mutableListOf<ArticleModel>()
     private lateinit var articleDB: DatabaseReference
+    private lateinit var userDB: DatabaseReference
     private val listener = object : ChildEventListener{
         override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
             val articleModel = snapshot.getValue(ArticleModel::class.java)
@@ -45,12 +49,37 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
         binding = fragmentHomeBinding
 
         articleList.clear()
+        userDB = Firebase.database.reference.child(DB_USERS)
         articleDB = Firebase.database.reference.child(DB_ARTICLES)
-        articleAdapter = ArticleAdapter()
-        articleAdapter.submitList(mutableListOf<ArticleModel>().apply{
-            add(ArticleModel("0","이동천",100000,"1조", imageUrl = ""))
-            add(ArticleModel("0","이동천오뺘",200000,"1조", imageUrl = ""))
+        articleAdapter = ArticleAdapter(onitemClicked = { articleModel->
+            if(auth.currentUser!=null){
+                //로그인 상태
+                if(auth.currentUser?.uid==articleModel.sellerId){
+                    val chatRoom= ChatListItem(
+                        buyerId = auth.currentUser!!.uid,
+                        sellerId = articleModel.sellerId,
+                        itemTitle = articleModel.title,
+                        key = System.currentTimeMillis()
+                    )
+                    userDB.child(auth.currentUser!!.uid)
+                        .child(CHILD_CHAT)
+                        .push()
+                        .setValue(chatRoom)
+                    userDB.child(articleModel.sellerId)
+                        .child(CHILD_CHAT)
+                        .push()
+                        .setValue(chatRoom)
+
+                    Snackbar.make(view,"채팅방 생성 완료, 채팅탭에서 확인해주세요", Snackbar.LENGTH_SHORT).show()
+
+                }else{
+                    Snackbar.make(view,"내가 올린 아이템입니다", Snackbar.LENGTH_SHORT).show()
+                }
+            }else{ //로그아웃 상태
+                Snackbar.make(view,"로그인 후 사용해주세요", Snackbar.LENGTH_SHORT).show()
+            }
         })
+
 
         fragmentHomeBinding.articleRecyclerView.layoutManager = LinearLayoutManager(context)
         fragmentHomeBinding.articleRecyclerView.adapter = articleAdapter

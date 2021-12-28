@@ -80,7 +80,13 @@ class MyPageFragment: Fragment(R.layout.fragment_mypage) {
                binding.signUpBtn.isEnabled=enable
            }
         }
-        fragmentMypageBinding.passwordEditText.addTextChangedListener {  }
+        fragmentMypageBinding.passwordEditText.addTextChangedListener {
+            binding?.let{binding->
+                val enable = binding.emailEditText.text.isNotEmpty() && binding.passwordEditText.text.isNotEmpty()
+                binding.signInOutBtn.isEnabled=enable
+                binding.signUpBtn.isEnabled=enable
+            }
+        }
     }
 
     //로그인 풀려있나 확인

@@ -10,9 +10,9 @@ import com.example.kot6.databinding.ItemArticleBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ArticleAdapter: ListAdapter<ArticleModel, ArticleAdapter.ViewHolder>(diffUtil) {
-    inner class ViewHolder(private val binding: ItemArticleBinding):RecyclerView.ViewHolder(binding.root){
-        fun bind(articleModel:ArticleModel){
+class ArticleAdapter(val onitemClicked:(ArticleModel)->Unit): ListAdapter<ArticleModel, ArticleAdapter.ViewHolder>(diffUtil) {
+    inner class ViewHolder(private val binding: ItemArticleBinding):RecyclerView.ViewHolder(binding.root) {
+        fun bind(articleModel: ArticleModel) {
             val format = SimpleDateFormat("MM월 dd일")
             val date = Date(articleModel.createdAt)
 
@@ -20,13 +20,17 @@ class ArticleAdapter: ListAdapter<ArticleModel, ArticleAdapter.ViewHolder>(diffU
             binding.dateTv.text = format.format(date).toString()
             binding.priceTv.text = articleModel.price
 
-            if(articleModel.imageUrl.isNotEmpty()){
+            if (articleModel.imageUrl.isNotEmpty()) {
                 Glide.with(binding.thumbnailImageView)
                     .load(articleModel.imageUrl)
                     .into(binding.thumbnailImageView)
-                }
+            }
+
+            binding.root.setOnClickListener {
+                onitemClicked(articleModel)
             }
         }
+    }
 
     companion object{
         val diffUtil = object: DiffUtil.ItemCallback<ArticleModel>(){
