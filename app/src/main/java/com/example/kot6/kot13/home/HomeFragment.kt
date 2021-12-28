@@ -54,7 +54,7 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
         articleAdapter = ArticleAdapter(onitemClicked = { articleModel->
             if(auth.currentUser!=null){
                 //로그인 상태
-                if(auth.currentUser?.uid==articleModel.sellerId){
+                if(auth.currentUser?.uid!=articleModel.sellerId){
                     val chatRoom= ChatListItem(
                         buyerId = auth.currentUser!!.uid,
                         sellerId = articleModel.sellerId,
@@ -69,9 +69,7 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
                         .child(CHILD_CHAT)
                         .push()
                         .setValue(chatRoom)
-
                     Snackbar.make(view,"채팅방 생성 완료, 채팅탭에서 확인해주세요", Snackbar.LENGTH_SHORT).show()
-
                 }else{
                     Snackbar.make(view,"내가 올린 아이템입니다", Snackbar.LENGTH_SHORT).show()
                 }
