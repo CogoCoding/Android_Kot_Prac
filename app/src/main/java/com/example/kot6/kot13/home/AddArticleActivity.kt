@@ -62,7 +62,7 @@ class AddArticleActivity:AppCompatActivity() {
             //중간에 이미지가 있으면 업로드 과정을 추가
             if(selectedUri!=null){
                 val photoUri = selectedUri?:return@setOnClickListener
-                uploadPhoto(photoUri, //uploadPhoto는 handler로 별도의 thread를 만듦으로 비동기
+                uploadPhoto(photoUri, //uploadPhoto는 별도의 thread를 handler로 사용하므로 비동기
                     successHandler = { uri ->
                         uploadArticle(sellerId,title,price,uri)
                     },
