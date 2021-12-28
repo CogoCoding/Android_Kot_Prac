@@ -59,11 +59,30 @@ class AddArticleActivity:AppCompatActivity() {
             val title = findViewById<EditText>(R.id.titleEditText).text.toString()
             val price = findViewById<EditText>(R.id.priceTv).text.toString()
             val sellerId = auth.currentUser?.uid.orEmpty()
-
-            val model = ArticleModel(sellerId,title,System.currentTimeMillis(),"$price 원","")
-            articleDB.push().setValue(model)
-            finish()
+            //중간에 이미지가 있으면 업로드 과정을 추가
+            if(selectedUri!=null){
+                val photoUri = selectedUri?:return@setOnClickListener
+                uploadPhoto(photoUri,
+                    successHandler = { uri ->
+                        uploadArticle(sellerId,title,price,uri)
+                    },
+                    errorHandler = {
+                        Toast.makeText(this,"사진 업로드에 실패했습니다.",Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }else{
+                uploadArticle(sellerId,title,price,"")
+            }
         }
+    }
+
+    private fun uploadPhoto(photoUri: Uri, successHandler:(String)->Unit, errorHandler:()->Unit) {
+    }
+
+    private fun uploadArticle(sellerId:String ,title:String ,price:String, imageUrl:String){
+        val model=ArticleModel(sellerId,title,System.currentTimeMillis(),"$price 원",imageUrl)
+        articleDB.push().setValue(model)
+        finish()
     }
 
     private fun showPermissionContextPopup() {
@@ -89,7 +108,7 @@ class AddArticleActivity:AppCompatActivity() {
                 if(grantResults.isNotEmpty()&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     startContentProvider()
                 }else{
-                    Toast.makeText(this,"권한을거부하셨습니다",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this,"권한을 거부하셨습니다",Toast.LENGTH_SHORT).show()
                 }
         }
     }
