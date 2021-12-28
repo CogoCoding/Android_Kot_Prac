@@ -6,13 +6,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.room.Database
+import androidx.core.view.isVisible
 import com.example.kot6.R
 import com.example.kot6.kot13.mypage.DBKey.Companion.DB_ARTICLES
 import com.google.firebase.auth.FirebaseAuth
@@ -57,8 +54,11 @@ class AddArticleActivity:AppCompatActivity() {
         }
         findViewById<Button>(R.id.submitBtn).setOnClickListener {
             val title = findViewById<EditText>(R.id.titleEditText).text.toString()
-            val price = findViewById<EditText>(R.id.priceTv).text.toString()
+            val price = findViewById<EditText>(R.id.priceEditText).text.toString()
             val sellerId = auth.currentUser?.uid.orEmpty()
+
+            showProgress()
+
             //중간에 이미지가 있으면 업로드 과정을 추가
             if(selectedUri!=null){
                 val photoUri = selectedUri?:return@setOnClickListener
@@ -68,6 +68,7 @@ class AddArticleActivity:AppCompatActivity() {
                     },
                     errorHandler = {
                         Toast.makeText(this,"사진 업로드에 실패했습니다.",Toast.LENGTH_SHORT).show()
+                        hideProgress()
                     }
                 )
             }else{
@@ -98,6 +99,7 @@ class AddArticleActivity:AppCompatActivity() {
     private fun uploadArticle(sellerId:String ,title:String ,price:String, imageUrl:String){
         val model=ArticleModel(sellerId,title,System.currentTimeMillis(),"$price 원",imageUrl)
         articleDB.push().setValue(model)
+        hideProgress()
         finish()
     }
 
@@ -133,6 +135,12 @@ class AddArticleActivity:AppCompatActivity() {
         val intent= Intent(Intent.ACTION_GET_CONTENT)
         intent.type = "image/*"
         startActivityForResult(intent,2020)
+    }
+    private fun showProgress(){
+        findViewById<ProgressBar>(R.id.progressBar).isVisible=false
+    }
+    private fun hideProgress(){
+        findViewById<ProgressBar>(R.id.progressBar).isVisible=false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

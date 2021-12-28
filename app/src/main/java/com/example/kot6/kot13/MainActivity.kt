@@ -22,8 +22,10 @@ class MainActivity:AppCompatActivity() {
         val chatListFragment = ChatListFragment()
         val myPageFragment = MyPageFragment()
 
+
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavagationView)
-        bottomNavigationView.setOnNavigationItemReselectedListener {
+        replaceFragment(homeFragment) //초기 화면 fragment 설정
+        bottomNavigationView.setOnNavigationItemSelectedListener {
             when(it.itemId){
                 R.id.home -> replaceFragment(homeFragment)
                 R.id.chatList ->replaceFragment(chatListFragment)
