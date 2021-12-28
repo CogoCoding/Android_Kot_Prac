@@ -62,7 +62,7 @@ class AddArticleActivity:AppCompatActivity() {
             //중간에 이미지가 있으면 업로드 과정을 추가
             if(selectedUri!=null){
                 val photoUri = selectedUri?:return@setOnClickListener
-                uploadPhoto(photoUri,
+                uploadPhoto(photoUri, //uploadPhoto는 handler로 별도의 thread를 만듦으로 비동기
                     successHandler = { uri ->
                         uploadArticle(sellerId,title,price,uri)
                     },
@@ -71,12 +71,28 @@ class AddArticleActivity:AppCompatActivity() {
                     }
                 )
             }else{
-                uploadArticle(sellerId,title,price,"")
+                uploadArticle(sellerId,title,price,"") //uploadArticle은 Main Thread에서 동작하므로 동기
             }
         }
     }
 
-    private fun uploadPhoto(photoUri: Uri, successHandler:(String)->Unit, errorHandler:()->Unit) {
+    private fun uploadPhoto(uri: Uri, successHandler:(String)->Unit, errorHandler:()->Unit) {
+        val fileName = "${System.currentTimeMillis()}.png"
+        storage.reference.child("article/photo").child(fileName)
+            .putFile(uri)
+            .addOnCompleteListener{
+                if(it.isSuccessful){
+                    storage.reference.child("article/photo").child(fileName)
+                        .downloadUrl
+                        .addOnSuccessListener { uri->
+                            successHandler(uri.toString())
+                        }.addOnFailureListener{
+                            errorHandler()
+                        }
+                }else{
+                    errorHandler()
+                }
+            }
     }
 
     private fun uploadArticle(sellerId:String ,title:String ,price:String, imageUrl:String){
