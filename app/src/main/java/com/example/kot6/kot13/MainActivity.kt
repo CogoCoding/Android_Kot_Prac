@@ -22,7 +22,6 @@ class MainActivity:AppCompatActivity() {
         val chatListFragment = ChatListFragment()
         val myPageFragment = MyPageFragment()
 
-
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavagationView)
         replaceFragment(homeFragment) //초기 화면 fragment 설정
         bottomNavigationView.setOnNavigationItemSelectedListener {
